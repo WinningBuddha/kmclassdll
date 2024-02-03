@@ -24,6 +24,7 @@ extern "C" __declspec(dllexport) void __cdecl MouseRightButtonDown();
 extern "C" __declspec(dllexport) void __cdecl MouseRightButtonUp();
 extern "C" __declspec(dllexport) void __cdecl MouseMiddleButtonDown();
 extern "C" __declspec(dllexport) void __cdecl MouseMiddleButtonUp();
+extern "C" __declspec(dllexport) void __cdecl MouseMiddleButtonScroll(int x);
 extern "C" __declspec(dllexport) void __cdecl MouseMoveRELATIVE(LONG dx, LONG dy);
 extern "C" __declspec(dllexport) void __cdecl MouseMoveABSOLUTE(LONG dx, LONG dy);
 extern "C" __declspec(dllexport) BOOL __cdecl LoadNTDriver(char* lpszDriverName, char* lpszDriverPath);
@@ -125,6 +126,27 @@ void __cdecl MouseMiddleButtonUp()
 	mid.ButtonFlags = MOUSE_MIDDLE_BUTTON_UP;
 	DeviceIoControl(drvhandle, IOCTL_MOUSE, &mid, sizeof(MOUSE_INPUT_DATA), NULL, 0, &dwOutput, NULL);
 }
+
+
+
+void __cdecl MouseMiddleButtonScroll(int x)
+{
+	MOUSE_INPUT_DATA mid;
+	DWORD dwOutput;
+
+	// 清零结构体
+	memset(&mid, 0, sizeof(MOUSE_INPUT_DATA));
+
+	// 设置滚轮滚动事件
+	mid.ButtonFlags = MOUSE_WHEEL;
+	mid.ButtonData = x;  // 正值表示向前滚动，负值表示向后滚动
+
+	// 发送滚轮滚动事件
+	DeviceIoControl(drvhandle, IOCTL_MOUSE, &mid, sizeof(MOUSE_INPUT_DATA), NULL, 0, &dwOutput, NULL);
+
+}
+
+
 
 void __cdecl MouseMoveRELATIVE(LONG dx, LONG dy)
 {
